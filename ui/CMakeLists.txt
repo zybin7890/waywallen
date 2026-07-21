@@ -328,4 +328,12 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${APP_SVG}")
     DESTINATION share/icons/hicolor/scalable/apps)
 endif()
 
+# 翻译文件安装
+file(GLOB TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/translations/*.qm)
+if(TS_FILES)
+  install(
+    FILES ${TS_FILES}
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${APP_ID}/translations)
+endif()
+
 qt_finalize_target(${PROJECT_NAME})
