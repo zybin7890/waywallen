@@ -1,0 +1,4 @@
+[plugin]
+id = "org.waywallen.locale.zh-cn"
+name = "Simplified Chinese Language Pack"
+version = "0.2.5"

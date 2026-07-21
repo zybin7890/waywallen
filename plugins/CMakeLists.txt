@@ -2,6 +2,7 @@ option(WAYWALLEN_BUILD_IMAGE_PLUGIN "Build the ffmpeg+Vulkan image plugin" ON)
 option(WAYWALLEN_BUILD_VIDEO_PLUGIN "Build the ffmpeg+Vulkan video plugin" ON)
 option(WAYWALLEN_BUILD_MPV_PLUGIN   "Build the libmpv+EGL/GBM video plugin" OFF)
 option(WAYWALLEN_INSTALL_WALLHAVEN_PLUGIN "Install the Wallhaven source plugin" ON)
+option(WAYWALLEN_INSTALL_ZH_CN_LOCALE_PLUGIN "Install the Simplified Chinese language plugin" ON)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 include(${CMAKE_SOURCE_DIR}/cmake/FetchDeps.cmake)
@@ -29,6 +30,19 @@ set_target_properties(waywallen-plugin-common PROPERTIES CXX_SCAN_FOR_MODULES ON
 
 if(WAYWALLEN_BUILD_IMAGE_PLUGIN)
     add_subdirectory(org.waywallen.image)
+endif()
+
+if(WAYWALLEN_INSTALL_ZH_CN_LOCALE_PLUGIN)
+    set(_ZH_CN_LOCALE_PLUGIN_DIR ${CMAKE_INSTALL_DATADIR}/waywallen/plugins/org.waywallen.locale.zh-cn)
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/org.waywallen.locale.zh-cn/plugin.toml
+        ${CMAKE_CURRENT_SOURCE_DIR}/org.waywallen.locale.zh-cn/files.txt
+        DESTINATION ${_ZH_CN_LOCALE_PLUGIN_DIR}
+    )
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/org.waywallen.locale.zh-cn/translations/waywallen_zh_CN.qm
+        DESTINATION ${_ZH_CN_LOCALE_PLUGIN_DIR}/translations
+    )
 endif()
 
 if(WAYWALLEN_BUILD_VIDEO_PLUGIN)

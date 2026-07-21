@@ -1,0 +1,3 @@
+plugin.toml
+files.txt
+translations/waywallen_zh_CN.qm

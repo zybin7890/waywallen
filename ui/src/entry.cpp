@@ -35,11 +35,14 @@ int run(int argc, char** argv) {
     gui_app.setApplicationName(APP_NAME);
     gui_app.setApplicationVersion(APP_VERSION);
 
-    // 加载翻译
+    // Load Qt and application translations from XDG data directories.
     QTranslator qtTranslator;
     QTranslator appTranslator;
     QLocale locale;
-    QStringList dataDirs = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+    QStringList dataDirs;
+    for (const auto& dir : QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
+        dataDirs.push_back(dir + "/waywallen");
+    }
 
     if (qtTranslator.load(locale, "qt", "_",
             QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
@@ -58,7 +61,7 @@ int run(int argc, char** argv) {
         }
     }
 
-    // 从插件目录加载翻译
+    // Language packs are ordinary plugins without a Lua entry point.
     for (const auto& dir : dataDirs) {
         QString pluginsDir = dir + "/plugins";
         if (!QDir(pluginsDir).exists()) continue;
