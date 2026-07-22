@@ -12,11 +12,6 @@
 
 #include <atomic>
 #include <chrono>
-import rstd.cppstd;
-import rstd.log;
-import wavsen.video;
-import wavsen.audio;
-import nlohmann.json;
 
 #include <rstd/macro.hpp>
 
@@ -37,6 +32,12 @@ import nlohmann.json;
 #include <sys/prctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+import rstd.cppstd;
+import rstd.log;
+import wavsen.video;
+import wavsen.audio;
+import nlohmann.json;
 
 namespace
 {

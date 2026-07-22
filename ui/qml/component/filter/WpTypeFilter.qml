@@ -23,7 +23,16 @@ QtObject {
         const src = supportedTypes && supportedTypes.length > 0
                   ? supportedTypes
                   : ["image", "video", "scene"];
-        return src.map(t => ({ name: qsTr(t), value: t }));
+        return src.map(t => ({ name: root.typeLabel(t), value: t }));
+    }
+
+    function typeLabel(type) {
+        switch (type) {
+        case "image": return qsTr("Image");
+        case "video": return qsTr("Video");
+        case "scene": return qsTr("Scene");
+        default: return type;
+        }
     }
 
     function labelFor(v) {

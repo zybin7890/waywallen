@@ -8,7 +8,7 @@ import waywallen.ui as W
 
 MD.Page {
     id: root
-    title: 'Plugins'
+    title: qsTr("Plugins")
     scrolling: !m_flick.atYBeginning
     readonly property int inactivePluginCount: (pluginListQuery.inactiveSystem ? pluginListQuery.inactiveSystem.length : 0) + (pluginListQuery.inactiveUser ? pluginListQuery.inactiveUser.length : 0)
     readonly property int pluginUpdateStateUnknown: 1
@@ -92,7 +92,7 @@ MD.Page {
             onTriggered: root.openInactiveDialog()
         },
         MD.Action {
-            icon.name: "update"
+            icon.name: MD.Token.icon.update
             text: qsTr("Check updates")
             enabled: !updateCheckQuery.querying && !updateInstallQuery.querying
             onTriggered: updateCheckQuery.check()
@@ -289,7 +289,7 @@ MD.Page {
         id: zipDialog
         title: qsTr("Choose plugin package")
         fileMode: MD.FileDialog.OpenFile
-        nameFilters: ["Plugin package (*.zip)", "All files (*)"]
+        nameFilters: [qsTr("Plugin package (*.zip)"), qsTr("All files (*)")]
         onAccepted: {
             inspectQuery.zipPath = selectedFile.toString().replace(/^file:\/\//, "");
             inspectQuery.reload();
@@ -410,7 +410,7 @@ MD.Page {
             MD.Text {
                 Layout.fillWidth: true
                 visible: !pluginListQuery.plugins || pluginListQuery.plugins.length === 0
-                text: "No plugins installed"
+                text: qsTr("No plugins installed")
                 typescale: MD.Token.typescale.body_medium
                 color: MD.Token.color.on_surface_variant
                 wrapMode: Text.WordWrap
@@ -489,7 +489,7 @@ MD.Page {
                             text: updateInstallQuery.pluginId === pluginItem.modelData.id && updateInstallQuery.querying
                                 ? qsTr("Updating")
                                 : qsTr("Update")
-                            icon.name: "download"
+                            icon.name: MD.Token.icon.download
                             visible: root.updateActionVisible(pluginItem.modelData.updateInfo)
                             displayHint: MD.ToolBarLayout.KeepVisible
                             busy: updateInstallQuery.pluginId === pluginItem.modelData.id && updateInstallQuery.querying
@@ -531,7 +531,7 @@ MD.Page {
                             fgColor: root.updateTagFgColor(pluginItem.modelData.updateInfo)
                         }
                         W.Tag {
-                            text: "v" + (pluginItem.modelData.version || "0.0.0")
+                            text: qsTr("v") + (pluginItem.modelData.version || "0.0.0")
                         }
                     }
                     below: Flow {

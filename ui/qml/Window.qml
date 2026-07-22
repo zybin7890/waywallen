@@ -22,7 +22,7 @@ MD.ApplicationWindow {
     visible: true
     height: 632
     width: 948
-    title: "waywallen"
+    title: qsTr("waywallen")
 
     // Persist the window size across runs. Wayland doesn't let clients
     // restore their own position, so only width/height are stored.
@@ -48,10 +48,10 @@ MD.ApplicationWindow {
     readonly property bool isCompact: MD.MProp.size.isCompact
 
     readonly property var pageModel: [
-        { icon: MD.Token.icon.wallpaper, name: "Wallpapers" },
-        { icon: MD.Token.icon.explore, name: "Discover" },
-        { icon: MD.Token.icon.monitor, name: "Displays" },
-        { icon: MD.Token.icon.monitor_heart, name: "Status" }
+        { icon: MD.Token.icon.wallpaper, name: qsTr("Wallpapers") },
+        { icon: MD.Token.icon.explore, name: qsTr("Discover") },
+        { icon: MD.Token.icon.monitor, name: qsTr("Displays") },
+        { icon: MD.Token.icon.monitor_heart, name: qsTr("Status") }
     ]
 
 
@@ -95,7 +95,9 @@ MD.ApplicationWindow {
         target: W.Notify
         function onLibrariesAdded(paths) {
             const n = paths.length;
-            W.Action.toast(n === 1 ? "Library added" : (n + " libraries added"));
+            W.Action.toast(n === 1
+                ? qsTr("Library added")
+                : qsTr("%1 libraries added").arg(n));
         }
         function onDisplayConnectionFailed(clientName, clientProtocolVersion, errorCode, reason) {
             const who = clientName.length > 0 ? clientName : qsTr("Display client");
@@ -186,7 +188,7 @@ MD.ApplicationWindow {
                             anchors.left: m_logo.right
                             anchors.leftMargin: 12
                             anchors.verticalCenter: m_logo.verticalCenter
-                            text: "waywallen"
+                            text: qsTr("waywallen")
                             typescale: MD.Token.typescale.title_large
                         }
                     }
@@ -203,7 +205,7 @@ MD.ApplicationWindow {
                                 expand: m_rail.useLarge
                                 checked: false
                                 icon.name: MD.Token.icon.extension
-                                text: "Plugins"
+                                text: qsTr("Plugins")
                                 onClicked: MD.Util.showPopup('waywallen.ui/PagePopup', {
                                     source: 'waywallen.ui/PluginManagePage'
                                 }, win)
@@ -214,7 +216,7 @@ MD.ApplicationWindow {
                                 expand: m_rail.useLarge
                                 checked: false
                                 icon.name: MD.Token.icon.settings
-                                text: "Settings"
+                                text: qsTr("Settings")
                                 onClicked: MD.Util.showPopup('waywallen.ui/PagePopup', {
                                     source: 'waywallen.ui/SettingsPage'
                                 }, win)
@@ -226,7 +228,7 @@ MD.ApplicationWindow {
                                 expand: true
                                 checked: false
                                 icon.name: MD.Token.icon.info
-                                text: "About"
+                                text: qsTr("About")
                                 onClicked: MD.Util.showPopup('waywallen.ui/PagePopup', {
                                     source: 'waywallen.ui/AboutPage'
                                 }, win)

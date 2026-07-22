@@ -149,6 +149,15 @@ MD.Page {
         return v.toFixed(i === 0 ? 0 : 1) + " " + u[i];
     }
 
+    function typeLabel(type) {
+        switch (type) {
+        case "image": return qsTr("Image");
+        case "video": return qsTr("Video");
+        case "scene": return qsTr("Scene");
+        default: return type || "";
+        }
+    }
+
     function formatSize(s) {
         const text = String(s ?? "").trim();
         if (text.length === 0)
@@ -198,7 +207,7 @@ MD.Page {
 
     MD.Action {
         id: tweakAction
-        text: "Tweak"
+        text: qsTr("Tweak")
         icon.name: MD.Token.icon.tune
         checked: root.isSheetActive(root.discoverTweakSheet)
         onTriggered: root.toggleDiscoverTweakSheet()
@@ -207,7 +216,7 @@ MD.Page {
     MD.Action {
         id: filterAction
         icon.name: MD.Token.icon.filter_list
-        text: "Filters"
+        text: qsTr("Filters")
         enabled: m_filter_dialog.availableTags.length > 0
         checked: searchQuery.tags.length > 0
         onTriggered: m_filter_dialog.open()
@@ -216,21 +225,21 @@ MD.Page {
     MD.Action {
         id: refreshAction
         icon.name: MD.Token.icon.refresh
-        text: "Refresh"
+        text: qsTr("Refresh")
         enabled: !searchQuery.querying
         onTriggered: searchQuery.reload()
     }
 
     MD.Action {
         id: closeDetailAction
-        text: "Close"
+        text: qsTr("Close")
         icon.name: MD.Token.icon.close
         onTriggered: root.closeDetail()
     }
 
     MD.Action {
         id: infoAction
-        text: "Info"
+        text: qsTr("Info")
         icon.name: MD.Token.icon.info
         enabled: root.detailRow !== null
         onTriggered: root.openInfo()
@@ -555,7 +564,7 @@ MD.Page {
 
                             MD.Label {
                                 Layout.fillWidth: true
-                                text: root.detailRow ? root.detailRow.wpType : ""
+                                text: root.detailRow ? root.typeLabel(root.detailRow.wpType) : ""
                                 typescale: MD.Token.typescale.label_large
                                 color: MD.Token.color.on_surface_variant
                                 maximumLineCount: 1
@@ -572,7 +581,7 @@ MD.Page {
 
                         MD.Label {
                             Layout.fillWidth: true
-                            text: root.detailRow ? qsTr("by ") + root.detailRow.author : ""
+                            text: root.detailRow ? qsTr("by %1").arg(root.detailRow.author) : ""
                             visible: root.detailRow && root.detailRow.author.length > 0
                             typescale: MD.Token.typescale.body_medium
                             color: MD.Token.color.on_surface_variant
@@ -594,7 +603,7 @@ MD.Page {
 
                             MD.Text {
                                 visible: m_meta.hasResolution
-                                text: "Resolution"
+                                text: qsTr("Resolution")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -607,7 +616,7 @@ MD.Page {
 
                             MD.Text {
                                 visible: m_meta.hasSize
-                                text: "Size"
+                                text: qsTr("Size")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -642,7 +651,7 @@ MD.Page {
 
                         MD.Text {
                             visible: detailsQuery.description.length > 0 || detailsQuery.querying
-                            text: "Description"
+                            text: qsTr("Description")
                             typescale: MD.Token.typescale.label_large
                             color: MD.Token.color.on_surface_variant
                         }

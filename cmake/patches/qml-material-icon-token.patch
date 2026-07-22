@@ -1,0 +1,13 @@
+diff --git a/qml/control/SegmentedButton.qml b/qml/control/SegmentedButton.qml
+index 6155e80..6f4f00d 100644
+--- a/qml/control/SegmentedButton.qml
++++ b/qml/control/SegmentedButton.qml
+@@ -41,7 +41,7 @@ T.Button {
+         text: control.text
+         color: control.mdState.textColor
+         style: (control.checked || MD.Util.hasIcon(control.icon)) ? MD.Enum.IconAndText : MD.Enum.TextOnly
+-        icon.name: control.checked ? "check" : control.icon.name
++        icon.name: control.checked ? MD.Token.icon.check : control.icon.name
+         icon.size: control.icon.width
+         opacity: control.mdState.contentOpacity
+         label.lineHeight: control.typescale.line_height

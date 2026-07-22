@@ -55,7 +55,8 @@
     "url": "https://github.com/hypengw/rstd.git",
     "x-cmake": {
       "name": "rstd",
-      "exclude_from_all": true
+      "exclude_from_all": true,
+      "patch_file": "cmake/patches/rstd-clang-libstdcxx15.patch"
     }
   },
   {
@@ -88,18 +89,20 @@
     "url": "https://github.com/hypengw/QmlMaterial.git",
     "x-cmake": {
       "name": "qml_material",
-      "find_package_args": "GLOBAL"
+      "find_package_args": "GLOBAL",
+      "patch_file": "cmake/patches/qml-material-icon-token.patch"
     }
   },
   {
-    "commit": "d02d9a7bfed546dfb7f87a5627b1c9e8f6fcc95a",
+    "commit": "1eadfcb9fc9d2d7b61d0ff2ec7a9f6982863336e",
     "dest": "build/_flatpak_deps/QExtra-src",
     "disable-shallow-clone": true,
     "type": "git",
     "url": "https://github.com/hypengw/QExtra.git",
     "x-cmake": {
       "name": "QExtra",
-      "find_package_args": "GLOBAL"
+      "find_package_args": "GLOBAL",
+      "patch_file": "cmake/patches/qextra-clang-libstdcxx15.patch"
     }
   }
 ]

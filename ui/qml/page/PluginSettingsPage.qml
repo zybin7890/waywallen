@@ -11,7 +11,7 @@ import waywallen.ui as W
 // open-time snapshot; edits stay pending until Apply.
 MD.Page {
     id: root
-    title: "Configure " + pluginName
+    title: qsTr("Configure %1").arg(pluginName)
     scrolling: !settingsList.atYBeginning
 
     property string pluginName: ""
@@ -91,6 +91,18 @@ MD.Page {
         setQuery.reload();
     }
 
+    function groupLabel(group) {
+        switch ((group || "").toLowerCase()) {
+        case "audio": return qsTr("Audio");
+        case "debug": return qsTr("Debug");
+        case "decode": return qsTr("Decode");
+        case "general": return qsTr("General");
+        case "playback": return qsTr("Playback");
+        case "render": return qsTr("Render");
+        default: return group;
+        }
+    }
+
     readonly property var flatSchemas: {
         const buckets = {};
         for (let i = 0; i < schemaList.length; ++i) {
@@ -134,14 +146,14 @@ MD.Page {
         bottomPadding: 16
 
         MD.Button {
-            text: "Reset"
+            text: qsTr("Reset")
             mdState.type: MD.Enum.BtText
             enabled: root.isDirty
             T.DialogButtonBox.buttonRole: T.DialogButtonBox.ResetRole
             onClicked: root.reset()
         }
         MD.Button {
-            text: "Apply"
+            text: qsTr("Apply")
             mdState.type: MD.Enum.BtText
             enabled: root.isDirty
             T.DialogButtonBox.buttonRole: T.DialogButtonBox.ApplyRole
@@ -177,7 +189,7 @@ MD.Page {
         section.delegate: MD.Text {
             required property string section
             width: settingsList.contentWidth
-            text: section
+            text: root.groupLabel(section)
             typescale: MD.Token.typescale.title_small
             color: MD.Token.color.on_surface_variant
             topPadding: 16

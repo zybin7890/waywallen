@@ -9,6 +9,14 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 set(JSON_Install    OFF CACHE INTERNAL "")
 fetchdeps(${CMAKE_SOURCE_DIR}/deps.json NAMES rstd wavsen nlohmann_json)
 
+# wavsen implementation units import rstd.log directly.  Make that module
+# provider explicit so CMake can place its BMI on the compile command when
+# building with strict C++20 module dependency scanning.
+if(TARGET rstd.log)
+    target_link_libraries(wavsen_video PRIVATE rstd.log)
+    target_link_libraries(wavsen_audio PRIVATE rstd.log)
+endif()
+
 add_subdirectory(../bridge waywallen-bridge-build)
 
 add_library(waywallen-plugin-json STATIC)

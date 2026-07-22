@@ -11,7 +11,7 @@ MD.Page {
     padding: 0
     showHeader: MD.MProp.size.isCompact
     showBackground: false
-    title: 'Status'
+    title: qsTr("Status")
 
     actions: [
         MD.Action {
@@ -102,9 +102,33 @@ MD.Page {
     }
 
     function rendererLabel(d) {
-        const name = (d && d.name && d.name.length) ? d.name : "renderer";
+        const name = (d && d.name && d.name.length) ? d.name : qsTr("Renderer");
         const pid = (d && d.pid) ? d.pid : 0;
         return name + "-" + pid;
+    }
+
+    function rendererStatusLabel(status) {
+        switch (status) {
+        case "playing": return qsTr("Playing");
+        case "paused": return qsTr("Paused");
+        case "muted": return qsTr("Muted");
+        default: return status;
+        }
+    }
+
+    function healthStateLabel(state) {
+        if (state === "healthy")
+            return qsTr("Healthy");
+        return state || qsTr("Unknown");
+    }
+
+    function typeLabel(type) {
+        switch (type) {
+        case "image": return qsTr("Image");
+        case "video": return qsTr("Video");
+        case "scene": return qsTr("Scene");
+        default: return type;
+        }
     }
 
     function desktopLabel(value) {
@@ -143,12 +167,12 @@ MD.Page {
         id: killDialog
         property string rendererId: ""
         property string label: ""
-        title: "Kill renderer?"
+        title: qsTr("Kill renderer?")
         parent: T.Overlay.overlay
         standardButtons: T.Dialog.Cancel | T.Dialog.Ok
 
         contentItem: MD.Text {
-            text: "Stop the renderer process\n\"" + killDialog.label + "\"?\nUnsaved frame state may be lost."
+            text: qsTr("Stop the renderer process \"%1\"?\nUnsaved frame state may be lost.").arg(killDialog.label)
             typescale: MD.Token.typescale.body_medium
             color: MD.Token.color.on_surface_variant
             wrapMode: Text.WordWrap
@@ -177,13 +201,13 @@ MD.Page {
                     spacing: 8
 
                     SectionTitle {
-                        text: "Daemon"
+                        text: qsTr("Daemon")
                     }
 
                     RowLayout {
                         spacing: 8
                         MD.Text {
-                            text: "Service:"
+                            text: qsTr("Service:")
                             typescale: MD.Token.typescale.label_medium
                             color: MD.Token.color.on_surface_variant
                         }
@@ -203,7 +227,7 @@ MD.Page {
                         W.Tag {
                             Layout.alignment: Qt.AlignVCenter
                             visible: W.Notify.displayBackend.flatpakId.length > 0
-                            text: "Flatpak"
+                            text: qsTr("Flatpak")
                             bgColor: MD.Token.color.tertiary_container
                             fgColor: MD.Token.color.on_tertiary_container
                         }
@@ -212,7 +236,7 @@ MD.Page {
                     RowLayout {
                         spacing: 8
                         MD.Text {
-                            text: "State:"
+                            text: qsTr("State:")
                             typescale: MD.Token.typescale.label_medium
                             color: MD.Token.color.on_surface_variant
                         }
@@ -225,7 +249,7 @@ MD.Page {
                         }
 
                         MD.Text {
-                            text: healthQuery.state || "unknown"
+                            text: root.healthStateLabel(healthQuery.state)
                             typescale: MD.Token.typescale.body_medium
                             color: MD.Token.color.on_surface
                         }
@@ -239,13 +263,13 @@ MD.Page {
                     spacing: 8
 
                     SectionTitle {
-                        text: "Active Renderers"
+                        text: qsTr("Active Renderers")
                     }
 
                     SectionHint {
                         readonly property var liveRenderers: W.App.rendererManager.renderers
                         visible: !liveRenderers || liveRenderers.length === 0
-                        text: "No active renderers"
+                        text: qsTr("No active renderers")
                     }
 
                     ListView {
@@ -268,7 +292,8 @@ MD.Page {
                             radius: 12
                             text: root.rendererLabel(modelData)
                             font.family: "monospace"
-                            supportText: (modelData.status || "") + " · " + (modelData.fps || 0) + " fps"
+                            supportText: root.rendererStatusLabel(modelData.status || "")
+                                + " · " + qsTr("%1 fps").arg(modelData.fps || 0)
                                 + (modelData.textureWidth ? " · " + modelData.textureWidth + "×" + modelData.textureHeight : "")
                             leader: MD.Icon {
                                 name: modelData.status === "paused" ? MD.Token.icon.pause : MD.Token.icon.play_arrow
@@ -302,18 +327,19 @@ MD.Page {
                     spacing: 8
 
                     SectionTitle {
-                        text: "Components"
+                        text: qsTr("Components")
                     }
 
                     SectionHint {
                         typescale: MD.Token.typescale.label_medium
                         visible: pluginQuery.supportedTypes && pluginQuery.supportedTypes.length > 0
-                        text: "Supported types: " + (pluginQuery.supportedTypes ? pluginQuery.supportedTypes.join(", ") : "")
+                        text: qsTr("Supported types: %1").arg(pluginQuery.supportedTypes
+                            ? pluginQuery.supportedTypes.map(root.typeLabel).join(", ") : "")
                     }
 
                     SectionHint {
                         visible: !pluginQuery.renderers || pluginQuery.renderers.length === 0
-                        text: "No components"
+                        text: qsTr("No components")
                     }
 
                     ListView {
@@ -334,7 +360,7 @@ MD.Page {
                             width: ListView.view.width
                             radius: 12
                             text: modelData.name || ""
-                            supportText: (modelData.types ? modelData.types.join(", ") : "")
+                            supportText: (modelData.types ? modelData.types.map(root.typeLabel).join(", ") : "")
                             leader: MD.Icon {
                                 name: MD.Token.icon.extension
                                 size: 24
@@ -344,7 +370,7 @@ MD.Page {
                                 spacing: 4
                                 W.Tag {
                                     Layout.alignment: Qt.AlignVCenter
-                                    text: "v" + (componentItem.modelData.version || "0.0.0")
+                                    text: qsTr("v") + (componentItem.modelData.version || "0.0.0")
                                 }
                                 MD.IconButton {
                                     visible: componentItem.hasSettings

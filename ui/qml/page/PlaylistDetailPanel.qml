@@ -132,7 +132,7 @@ ColumnLayout {
                             }
 
                             MD.Text {
-                                text: "h"
+                                text: qsTr("h")
                                 typescale: MD.Token.typescale.body_small
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -153,7 +153,7 @@ ColumnLayout {
                             }
 
                             MD.Text {
-                                text: "m"
+                                text: qsTr("m")
                                 typescale: MD.Token.typescale.body_small
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -174,7 +174,7 @@ ColumnLayout {
                             }
 
                             MD.Text {
-                                text: "s"
+                                text: qsTr("s")
                                 typescale: MD.Token.typescale.body_small
                                 color: MD.Token.color.on_surface_variant
                             }

@@ -1,0 +1,28 @@
+diff --git a/src/cppstd/cppstd.cppm b/src/cppstd/cppstd.cppm
+index 476d079..58e22ea 100644
+--- a/src/cppstd/cppstd.cppm
++++ b/src/cppstd/cppstd.cppm
+@@ -501,7 +501,6 @@ export using std::allocator_traits;
+ export using std::allocator_traits;
+ export using std::default_delete;
+ export using std::enable_shared_from_this;
+-export using std::make_shared;
+ export using std::shared_ptr;
+ export using std::unique_ptr;
+ export using std::weak_ptr;
+@@ -958,11 +957,11 @@ export using std::weak_ordering;
+ // Free-function operators in std:: that ADL needs visible at import sites.
+-// Without an explicit `export using`, GMF-attached overloads aren't reachable.
+-// libstdc++ vector::iterator is __gnu_cxx::__normal_iterator with hidden-friend
+-// operators in __gnu_cxx::; those are still reachable via ADL through the
+-// vector type even with these std exports active.
+ export using std::operator+;
++// Clang cannot use this same-namespace using declaration as the friend target
++// declared by libstdc++ 15's associative containers.
++#if !(defined(__clang__) && defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE >= 15)
+ export using std::operator==;
++#endif
+ export using std::operator!=;
+ export using std::operator<;
+ export using std::operator<=;
+ export using std::operator>;

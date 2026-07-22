@@ -9,7 +9,7 @@ import waywallen.ui as W
 MD.Page {
     id: root
 
-    title: 'Displays'
+    title: qsTr("Displays")
     showHeader: MD.MProp.size.isCompact
     showBackground: false
     readonly property real displayGapPx: 80
@@ -31,7 +31,9 @@ MD.Page {
         , 3 // PRESERVE_ASPECT_CROP
         , 7  // CENTERED
     ]
-    readonly property var kFillModeLabels: ["Stretch", "Fit", "Crop", "Center"]
+    readonly property var kFillModeLabels: [
+        qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Center")
+    ]
     function fillmodeIndex(value) {
         const i = root.kFillModeValues.indexOf(value);
         return i < 0 ? 0 : i;
@@ -44,6 +46,15 @@ MD.Page {
     function rotationIndex(value) {
         const i = root.kRotationValues.indexOf(value);
         return i < 0 ? 0 : i;
+    }
+
+    function rendererStatusLabel(status) {
+        switch (status) {
+        case "playing": return qsTr("Playing");
+        case "paused": return qsTr("Paused");
+        case "muted": return qsTr("Muted");
+        default: return status;
+        }
     }
 
     function clampPercent(value) {
@@ -248,7 +259,8 @@ MD.Page {
 
                             MD.Text {
                                 Layout.fillWidth: true
-                                text: rectItem.d.displayLabel || rectItem.d.name || ("Display " + rectItem.d.id)
+                                text: rectItem.d.displayLabel || rectItem.d.name
+                                    || qsTr("Display %1").arg(rectItem.d.id)
                                 typescale: MD.Token.typescale.title_small
                                 color: rectItem.hasLink ? MD.Token.color.on_primary_container : MD.Token.color.on_surface
                                 horizontalAlignment: Text.AlignHCenter
@@ -267,7 +279,7 @@ MD.Page {
                             anchors.left: parent.left
                             anchors.top: parent.top
                             anchors.margins: 6
-                            text: "#" + rectItem.d.id
+                            text: qsTr("#%1").arg(rectItem.d.id)
                             typescale: MD.Token.typescale.label_small
                             color: rectItem.hasLink ? MD.Token.color.on_primary_container : MD.Token.color.on_surface_variant
                         }
@@ -334,7 +346,9 @@ MD.Page {
                             id: aliasField
                             Layout.fillWidth: true
                             visible: parent.canRename
-                            placeholderText: root.selected ? (root.selected.name || ("Display " + root.selected.id)) : ""
+                            placeholderText: root.selected
+                                ? (root.selected.name || qsTr("Display %1").arg(root.selected.id))
+                                : ""
                             readonly property string serverAlias: root.selected ? (root.selected.alias || "") : ""
                             onServerAliasChanged: if (!activeFocus)
                                 text = serverAlias
@@ -365,7 +379,10 @@ MD.Page {
                         MD.Text {
                             Layout.fillWidth: true
                             visible: !parent.canRename
-                            text: root.selected ? (root.selected.displayLabel || root.selected.name || ("Display " + root.selected.id)) : ""
+                            text: root.selected
+                                ? (root.selected.displayLabel || root.selected.name
+                                   || qsTr("Display %1").arg(root.selected.id))
+                                : ""
                             typescale: MD.Token.typescale.title_medium
                             color: MD.Token.color.on_surface
                             elide: Text.ElideRight
@@ -376,7 +393,7 @@ MD.Page {
                             icon.name: MD.Token.icon.refresh
                             MD.ToolTip {
                                 visible: parent.hovered
-                                text: "Reset to compositor name"
+                                text: qsTr("Reset to compositor name")
                             }
                             onClicked: {
                                 if (!root.selected)
@@ -403,7 +420,7 @@ MD.Page {
                         RowLayout {
                             spacing: 8
                             MD.Text {
-                                text: "ID:"
+                                text: qsTr("ID:")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -417,7 +434,7 @@ MD.Page {
                         RowLayout {
                             spacing: 8
                             MD.Text {
-                                text: "Size:"
+                                text: qsTr("Size:")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -432,7 +449,7 @@ MD.Page {
                             visible: !!root.selected && root.selected.refreshMhz > 0
                             spacing: 8
                             MD.Text {
-                                text: "Refresh:"
+                                text: qsTr("Refresh:")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -455,7 +472,7 @@ MD.Page {
                     }
 
                     MD.Text {
-                        text: "Connected"
+                        text: qsTr("Connected")
                         typescale: MD.Token.typescale.title_small
                         color: MD.Token.color.on_surface
                     }
@@ -488,7 +505,7 @@ MD.Page {
                             if (count > 0)
                                 parts.push(Math.min(position + 1, count) + " / " + count);
                             if (remaining > 0)
-                                parts.push(Math.ceil(remaining / 60) + " min left");
+                                parts.push(qsTr("%1 min left").arg(Math.ceil(remaining / 60)));
                             return parts.join(" · ");
                         }
                         Layout.fillWidth: true
@@ -520,13 +537,13 @@ MD.Page {
                                     text: {
                                         const r = connectedRow.renderer;
                                         if (r) {
-                                            const name = (r.name && r.name.length) ? r.name : "renderer";
+                                            const name = (r.name && r.name.length) ? r.name : qsTr("Renderer");
                                             return r.pid > 0 ? (name + "-" + r.pid) : name;
                                         }
                                         if (connectedRow.connectedId.length > 0) {
                                             return connectedRow.connectedId;
                                         }
-                                        return "Idle";
+                                        return qsTr("Idle");
                                     }
                                     typescale: MD.Token.typescale.body_medium
                                     color: connectedRow.renderer ? MD.Token.color.on_surface : MD.Token.color.on_surface_variant
@@ -541,7 +558,8 @@ MD.Page {
                                         const r = connectedRow.renderer;
                                         if (!r)
                                             return "";
-                                        const parts = [(r.status || ""), (r.fps || 0) + " fps"];
+                                        const parts = [root.rendererStatusLabel(r.status || ""),
+                                                       qsTr("%1 fps").arg(r.fps || 0)];
                                         const textureWidth = Number(r.textureWidth || 0);
                                         const textureHeight = Number(r.textureHeight || 0);
                                         if (textureWidth > 0 && textureHeight > 0)
@@ -574,7 +592,7 @@ MD.Page {
 
                                 MD.Text {
                                     Layout.fillWidth: true
-                                    text: "Playlist #" + connectedRow.activePlaylistId
+                                    text: qsTr("Playlist #%1").arg(connectedRow.activePlaylistId)
                                     typescale: MD.Token.typescale.body_medium
                                     color: MD.Token.color.on_surface
                                     elide: Text.ElideRight
@@ -607,14 +625,14 @@ MD.Page {
 
                         MD.Text {
                             Layout.fillWidth: true
-                            text: "Layout"
+                            text: qsTr("Layout")
                             typescale: MD.Token.typescale.title_small
                             color: MD.Token.color.on_surface
                         }
 
                         MD.AssistChip {
                             visible: !!root.selected && root.selected.layoutOverriddenByWallpaper
-                            text: "Wallpaper override"
+                            text: qsTr("Wallpaper override")
                         }
 
                         Item {
@@ -631,7 +649,7 @@ MD.Page {
                                 icon.name: MD.Token.icon.refresh
                                 MD.ToolTip {
                                     visible: parent.hovered
-                                    text: "Revert to global default"
+                                    text: qsTr("Revert to global default")
                                 }
                                 onClicked: {
                                     if (!root.selected)
@@ -671,7 +689,7 @@ MD.Page {
                             spacing: 4
 
                             MD.Text {
-                                text: "Fill mode"
+                                text: qsTr("Fill mode")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -713,7 +731,7 @@ MD.Page {
                             opacity: enabled ? 1.0 : 0.4
 
                             MD.Text {
-                                text: "Horizontal"
+                                text: qsTr("Horizontal")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -740,7 +758,7 @@ MD.Page {
                             opacity: enabled ? 1.0 : 0.4
 
                             MD.Text {
-                                text: "Vertical"
+                                text: qsTr("Vertical")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }
@@ -764,7 +782,7 @@ MD.Page {
                             spacing: 4
 
                             MD.Text {
-                                text: "Rotation"
+                                text: qsTr("Rotation")
                                 typescale: MD.Token.typescale.label_medium
                                 color: MD.Token.color.on_surface_variant
                             }

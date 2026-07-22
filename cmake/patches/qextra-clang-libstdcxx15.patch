@@ -1,0 +1,21 @@
+diff --git a/src/executor.cppm b/src/executor.cppm
+index b241fd1..a38e606 100644
+--- a/src/executor.cppm
++++ b/src/executor.cppm
+@@ -19,3 +19,4 @@ public:
+-        auto owned = std::make_shared<rstd::async::ExecutorJob>(rstd::move(job));
++        auto owned = std::shared_ptr<rstd::async::ExecutorJob>(
++            new rstd::async::ExecutorJob(rstd::move(job)));
+         return QMetaObject::invokeMethod(
+             target,
+diff --git a/src/global_static.cpp b/src/global_static.cpp
+index 88da89e..5749720 100644
+--- a/src/global_static.cpp
++++ b/src/global_static.cpp
+@@ -41,5 +41,5 @@ auto GlobalStatic::add_impl(std::string_view name, void* instance,
+                             std::function<void(void*)> deleter)
+     -> std::shared_ptr<HolderImpl> {
+-    auto holder      = std::make_shared<HolderImpl>();
++    auto holder      = std::shared_ptr<HolderImpl>(new HolderImpl());
+     holder->instance = instance;
+     holder->deleter  = deleter;

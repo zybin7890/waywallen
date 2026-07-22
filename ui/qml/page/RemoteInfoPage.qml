@@ -5,7 +5,7 @@ import Qcm.Material as MD
 
 MD.Page {
     id: root
-    title: "Remote info"
+    title: qsTr("Remote info")
     scrolling: !infoFlick.atYBeginning
 
     property var item: null
@@ -21,6 +21,15 @@ MD.Page {
 
     function hasText(v) {
         return value(v).length > 0;
+    }
+
+    function typeLabel(type) {
+        switch (type) {
+        case "image": return qsTr("Image");
+        case "video": return qsTr("Video");
+        case "scene": return qsTr("Scene");
+        default: return value(type);
+        }
     }
 
     function formatList(v) {
@@ -101,34 +110,34 @@ MD.Page {
 
             InfoLabel {
                 visible: root.hasText(root.sourceName)
-                label: "Source"
+                label: qsTr("Source")
             }
             InfoValue {
                 visible: root.hasText(root.sourceName)
                 text: root.sourceName
             }
 
-            InfoLabel { label: "Source ID" }
+            InfoLabel { label: qsTr("Source ID") }
             InfoValue { text: root.value(root.item?.sourceId) }
 
-            InfoLabel { label: "Item ID" }
+            InfoLabel { label: qsTr("Item ID") }
             InfoValue { text: root.value(root.item?.itemId) }
 
-            InfoLabel { label: "Title" }
+            InfoLabel { label: qsTr("Title") }
             InfoValue { text: root.value(root.item?.title) }
 
             InfoLabel {
                 visible: root.hasText(root.item?.wpType)
-                label: "Type"
+                label: qsTr("Type")
             }
             InfoValue {
                 visible: root.hasText(root.item?.wpType)
-                text: root.value(root.item?.wpType)
+                text: root.typeLabel(root.item?.wpType)
             }
 
             InfoLabel {
                 visible: root.hasText(root.item?.author)
-                label: "Author"
+                label: qsTr("Author")
             }
             InfoValue {
                 visible: root.hasText(root.item?.author)
@@ -137,7 +146,7 @@ MD.Page {
 
             InfoLabel {
                 visible: root.hasText(root.item?.previewUrl)
-                label: "Preview"
+                label: qsTr("Preview")
             }
             InfoValue {
                 visible: root.hasText(root.item?.previewUrl)
@@ -146,7 +155,7 @@ MD.Page {
 
             InfoLabel {
                 visible: root.hasText(root.formattedSize)
-                label: "Size"
+                label: qsTr("Size")
             }
             InfoValue {
                 visible: root.hasText(root.formattedSize)
@@ -155,7 +164,7 @@ MD.Page {
 
             InfoLabel {
                 visible: Number(root.details?.width ?? 0) > 0
-                label: "Width"
+                label: qsTr("Width")
             }
             InfoValue {
                 visible: Number(root.details?.width ?? 0) > 0
@@ -164,19 +173,19 @@ MD.Page {
 
             InfoLabel {
                 visible: Number(root.details?.height ?? 0) > 0
-                label: "Height"
+                label: qsTr("Height")
             }
             InfoValue {
                 visible: Number(root.details?.height ?? 0) > 0
                 text: String(root.details?.height ?? 0)
             }
 
-            InfoLabel { label: "Installed" }
-            InfoValue { text: root.item?.installed ? "true" : "false" }
+            InfoLabel { label: qsTr("Installed") }
+            InfoValue { text: root.item?.installed ? qsTr("Yes") : qsTr("No") }
 
             InfoLabel {
                 visible: root.hasText(root.tagsText)
-                label: "Tags"
+                label: qsTr("Tags")
             }
             InfoValue {
                 visible: root.hasText(root.tagsText)
@@ -185,7 +194,7 @@ MD.Page {
 
             InfoLabel {
                 visible: root.hasText(root.details?.description)
-                label: "Description"
+                label: qsTr("Description")
             }
             InfoValue {
                 visible: root.hasText(root.details?.description)

@@ -58,25 +58,25 @@ MD.BottomSheet {
                     size: MD.Enum.XS
 
                     MD.SegmentedButton {
-                        text: "1:1"
+                        text: qsTr("1:1")
                         checked: Math.abs(control.tweak.itemAspectRatio - 1) < 0.001
                         onClicked: control.tweak.setItemAspectRatio(1)
                     }
 
                     MD.SegmentedButton {
-                        text: "4:3"
+                        text: qsTr("4:3")
                         checked: Math.abs(control.tweak.itemAspectRatio - 4 / 3) < 0.001
                         onClicked: control.tweak.setItemAspectRatio(4 / 3)
                     }
 
                     MD.SegmentedButton {
-                        text: "16:9"
+                        text: qsTr("16:9")
                         checked: Math.abs(control.tweak.itemAspectRatio - 16 / 9) < 0.001
                         onClicked: control.tweak.setItemAspectRatio(16 / 9)
                     }
 
                     MD.SegmentedButton {
-                        text: "9:16"
+                        text: qsTr("9:16")
                         checked: Math.abs(control.tweak.itemAspectRatio - 9 / 16) < 0.001
                         onClicked: control.tweak.setItemAspectRatio(9 / 16)
                     }

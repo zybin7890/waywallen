@@ -6,9 +6,9 @@ import Qcm.Material as MD
 import waywallen.ui as W
 
 // Renders one schema-driven control. The schema dict comes verbatim
-// from `RendererPluginListQuery.renderers[i].settings[j]`; we never
-// resolve `label_key`/`description_key` (no i18n yet) and fall back to
-// a snake_case → Title Case transform of `key`.
+// from `RendererPluginListQuery.renderers[i].settings[j]`. Known core
+// setting keys get translated labels; third-party keys fall back to a
+// snake_case → Title Case transform.
 ColumnLayout {
     id: root
 
@@ -29,16 +29,39 @@ ColumnLayout {
     readonly property int kBool: 4
     readonly property int kI32: 5
 
-    readonly property string label: {
-        const sk = schema.label_key || "";
-        if (sk.length > 0)
-            return sk;
-        const raw = schema.key || "";
+    function _humanize(raw) {
         if (raw.length === 0)
             return "";
         return raw.split("_").map(function (p) {
             return p.length === 0 ? p : p[0].toUpperCase() + p.slice(1);
         }).join(" ");
+    }
+
+    function _translatedLabel(key) {
+        switch (key) {
+        case "custom_extent": return qsTr("Custom extent");
+        case "enable_audio": return qsTr("Enable audio");
+        case "fps": return qsTr("Frame rate");
+        case "hwdec": return qsTr("Hardware decoding");
+        case "loop_file": return qsTr("Loop file");
+        case "msaa": return qsTr("MSAA");
+        case "remote_debugging_port": return qsTr("Remote debugging port");
+        case "render_node": return qsTr("Render node");
+        case "resolution": return qsTr("Resolution");
+        case "shared_texture_enabled": return qsTr("Shared texture");
+        case "volume": return qsTr("Volume");
+        default: return "";
+        }
+    }
+
+    readonly property string label: {
+        const key = schema.key || "";
+        const translated = root._translatedLabel(key);
+        if (translated.length > 0)
+            return translated;
+        const labelKey = schema.label_key || "";
+        const raw = key.length > 0 ? key : labelKey.split(".").pop();
+        return root._humanize(raw);
     }
 
     readonly property string description: schema.description_key || ""
@@ -50,12 +73,12 @@ ColumnLayout {
     // Wire enum value → display label. Kept in sync with
     // <waywallen-bridge/resolution.h> WW_RESOLUTION_*.
     readonly property var resolutionPresets: [
-        { value: "-1", label: "Custom" },
-        { value: "0", label: "Origin" },
-        { value: "1", label: "720p" },
-        { value: "2", label: "1080p" },
-        { value: "3", label: "1440p" },
-        { value: "4", label: "2160p" }
+        { value: "-1", label: qsTr("Custom") },
+        { value: "0", label: qsTr("Origin") },
+        { value: "1", label: qsTr("720p") },
+        { value: "2", label: qsTr("1080p") },
+        { value: "3", label: qsTr("1440p") },
+        { value: "4", label: qsTr("2160p") }
     ]
 
     readonly property bool isTextField: {
@@ -140,7 +163,7 @@ ColumnLayout {
             }
             MD.ToolTip {
                 visible: hovered.hovered
-                text: "Requires renderer restart"
+                text: qsTr("Requires renderer restart")
             }
         }
     }
@@ -350,7 +373,7 @@ ColumnLayout {
 
             MD.FilterChip {
                 id: autoChip
-                text: "Auto"
+                text: qsTr("Auto")
                 checked: root.value === ""
                 onClicked: root._emit("")
                 Connections {

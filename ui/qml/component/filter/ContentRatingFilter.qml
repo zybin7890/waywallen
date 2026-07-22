@@ -25,7 +25,16 @@ QtObject {
         const src = allRatings && allRatings.length > 0
                   ? allRatings
                   : ["Everyone", "Questionable", "Mature"];
-        return src.map(r => ({ name: r, value: r }));
+        return src.map(r => ({ name: root.ratingLabel(r), value: r }));
+    }
+
+    function ratingLabel(rating) {
+        switch (rating) {
+        case "Everyone": return qsTr("Everyone");
+        case "Questionable": return qsTr("Questionable");
+        case "Mature": return qsTr("Mature");
+        default: return rating;
+        }
     }
 
     readonly property Component valueDelegate: Component {

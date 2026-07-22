@@ -127,6 +127,7 @@ macro(_fetchdeps_fetch_one _fd_entry _fd_source_root)
 
     set(_fd_declare_args "")
     set(_fd_exclude_from_all FALSE)
+    set(_fd_find_package_args "")
 
     if(_fd_dtype STREQUAL "git")
       _fetchdeps_json_get_opt(_fd_url    "${_fd_entry}" url)
@@ -203,13 +204,39 @@ macro(_fetchdeps_fetch_one _fd_entry _fd_source_root)
       _fetchdeps_json_get_opt(_fd_v "${_fd_xc}" find_package_args)
       if(_fd_v)
         separate_arguments(_fd_fpa UNIX_COMMAND "${_fd_v}")
-        list(APPEND _fd_declare_args FIND_PACKAGE_ARGS ${_fd_fpa})
+        set(_fd_find_package_args ${_fd_fpa})
       endif()
 
       _fetchdeps_json_get_opt(_fd_v "${_fd_xc}" source_subdir)
       if(_fd_v)
         list(APPEND _fd_declare_args SOURCE_SUBDIR "${_fd_v}")
         set(_FETCHDEPS_SOURCE_SUBDIR_${_fd_name} "${_fd_v}" CACHE INTERNAL "" FORCE)
+      endif()
+
+      _fetchdeps_json_get_opt(_fd_v "${_fd_xc}" patch_file)
+      if(_fd_v)
+        if(IS_ABSOLUTE "${_fd_v}")
+          set(_fd_patch_file "${_fd_v}")
+        else()
+          set(_fd_patch_file "${_fd_source_root}/${_fd_v}")
+        endif()
+        if(NOT EXISTS "${_fd_patch_file}")
+          message(FATAL_ERROR
+            "fetchdeps: patch for '${_fd_name}' not found: ${_fd_patch_file}")
+        endif()
+        find_program(_fd_git_executable NAMES git REQUIRED)
+        set(_fd_patch_runner "${_fd_source_root}/cmake/ApplyPatch.cmake")
+        if(NOT EXISTS "${_fd_patch_runner}")
+          message(FATAL_ERROR
+            "fetchdeps: patch runner not found: ${_fd_patch_runner}")
+        endif()
+        list(APPEND _fd_declare_args
+          PATCH_COMMAND
+            "${CMAKE_COMMAND}"
+            "-DGIT_EXECUTABLE=${_fd_git_executable}"
+            "-DSOURCE_DIR=<SOURCE_DIR>"
+            "-DPATCH_FILE=${_fd_patch_file}"
+            -P "${_fd_patch_runner}")
       endif()
 
       _fetchdeps_json_has_key(_fd_has_sub "${_fd_xc}" git_submodules)
@@ -224,6 +251,13 @@ macro(_fetchdeps_fetch_one _fd_entry _fd_source_root)
           endforeach()
           list(APPEND _fd_declare_args GIT_SUBMODULES ${_fd_subs})
         endif()
+      endif()
+
+      # FIND_PACKAGE_ARGS consumes every argument that follows it, so append
+      # it only after all FetchContent and ExternalProject options.
+      if(_fd_find_package_args)
+        list(APPEND _fd_declare_args
+          FIND_PACKAGE_ARGS ${_fd_find_package_args})
       endif()
     endif()
 

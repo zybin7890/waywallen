@@ -8,7 +8,7 @@ set(APP_AUTHOR "hypengw")
 
 project(waywallen-ui LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(BUILD_SHARED_LIBS OFF)
@@ -42,8 +42,34 @@ if("${QT_INSTALL_QML}" STREQUAL "")
 endif()
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
+# QmlMaterial stores its Material Symbols font in Git LFS. FetchContent only
+# checks out the 131-byte LFS pointer when git-lfs is unavailable, which makes
+# private-use icon code points fall back to unrelated system glyphs (for
+# example, the tune icon can render as a skull). Download the pinned upstream
+# font by content hash and embed it in the application so installed builds are
+# self-contained.
+set(WAYWALLEN_MATERIAL_SYMBOLS_FONT_NAME
+    "MaterialSymbolsRounded.wght_400.opsz_24.woff2")
+set(WAYWALLEN_MATERIAL_SYMBOLS_FONT
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/assets/${WAYWALLEN_MATERIAL_SYMBOLS_FONT_NAME}")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/assets")
+file(
+  DOWNLOAD
+  "https://media.githubusercontent.com/media/hypengw/QmlMaterial/a2c77e3db1888f6b907e9b06bcb0c4aaf8a7a573/assets/${WAYWALLEN_MATERIAL_SYMBOLS_FONT_NAME}"
+  "${WAYWALLEN_MATERIAL_SYMBOLS_FONT}"
+  EXPECTED_HASH
+    "SHA256=d737c68c3d281903b0956678589f36351a038aee7ee75351ad5a72941658b957"
+  TLS_VERIFY ON)
+set(QM_ICON_FONT_URL
+    "qrc:/waywallen/ui/assets/${WAYWALLEN_MATERIAL_SYMBOLS_FONT_NAME}"
+    CACHE STRING "Embedded Material Symbols font URL" FORCE)
+
 include(${CMAKE_SOURCE_DIR}/cmake/FetchDeps.cmake)
-fetchdeps(${CMAKE_SOURCE_DIR}/deps.json)
+# The UI does not use Corrosion directly. Avoid requiring a Rust toolchain
+# when the daemon is explicitly disabled for a UI-only build.
+fetchdeps(${CMAKE_SOURCE_DIR}/deps.json NAMES
+  asio pegtl nlohmann_json rstd ncrequest wavsen qml_material QExtra)
 
 qt_standard_project_setup()
 
@@ -199,7 +225,13 @@ set(QML_FILES
 )
 set(RESOURCES
   assets/waywallen-ui.svg
+  ${WAYWALLEN_MATERIAL_SYMBOLS_FONT}
 )
+
+set_source_files_properties(
+  "${WAYWALLEN_MATERIAL_SYMBOLS_FONT}"
+  PROPERTIES QT_RESOURCE_ALIAS
+             "assets/${WAYWALLEN_MATERIAL_SYMBOLS_FONT_NAME}")
 
 set_source_files_properties(qml/Global.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
@@ -315,6 +347,47 @@ install(
   FILES "${CMAKE_CURRENT_BINARY_DIR}/${APP_METAINFO}"
   RENAME ${APP_ID}.metainfo.xml
   DESTINATION share/metainfo)
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/i18n/waywallen_zh_CN.qm"
+  DESTINATION share/waywallen/translations)
+
+# The same catalogue is also shipped as an installable language-pack plugin.
+# The UI discovers translations/ inside installed plugins at startup.
+set(ZH_CN_PLUGIN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/i18n/zh_CN_plugin")
+set(ZH_CN_PLUGIN_STAGE_DIR "${CMAKE_CURRENT_BINARY_DIR}/zh_CN_plugin")
+set(ZH_CN_PLUGIN_ARCHIVE "${CMAKE_CURRENT_BINARY_DIR}/waywallen_zh_CN_plugin.zip")
+add_custom_command(
+  OUTPUT "${ZH_CN_PLUGIN_ARCHIVE}"
+  COMMAND "${CMAKE_COMMAND}" -E rm -rf "${ZH_CN_PLUGIN_STAGE_DIR}"
+  COMMAND "${CMAKE_COMMAND}" -E make_directory
+          "${ZH_CN_PLUGIN_STAGE_DIR}/translations"
+  COMMAND "${CMAKE_COMMAND}" -E copy
+          "${ZH_CN_PLUGIN_SOURCE_DIR}/plugin.toml"
+          "${ZH_CN_PLUGIN_SOURCE_DIR}/files.txt"
+          "${ZH_CN_PLUGIN_STAGE_DIR}"
+  COMMAND "${CMAKE_COMMAND}" -E copy
+          "${CMAKE_CURRENT_SOURCE_DIR}/i18n/waywallen_zh_CN.qm"
+          "${ZH_CN_PLUGIN_STAGE_DIR}/translations/waywallen_zh_CN.qm"
+  COMMAND "${CMAKE_COMMAND}" -E chdir "${ZH_CN_PLUGIN_STAGE_DIR}"
+          "${CMAKE_COMMAND}" -E tar cf "${ZH_CN_PLUGIN_ARCHIVE}"
+          --format=zip plugin.toml files.txt translations
+  DEPENDS
+    "${ZH_CN_PLUGIN_SOURCE_DIR}/plugin.toml"
+    "${ZH_CN_PLUGIN_SOURCE_DIR}/files.txt"
+    "${CMAKE_CURRENT_SOURCE_DIR}/i18n/waywallen_zh_CN.qm"
+  VERBATIM)
+add_custom_target(waywallen-zh-cn-plugin DEPENDS "${ZH_CN_PLUGIN_ARCHIVE}")
+
+set(ZH_CN_PLUGIN_INSTALL_DIR
+    "share/waywallen/plugins/org.waywallen.locale.zh-cn")
+install(
+  FILES
+    "${ZH_CN_PLUGIN_SOURCE_DIR}/plugin.toml"
+    "${ZH_CN_PLUGIN_SOURCE_DIR}/files.txt"
+  DESTINATION "${ZH_CN_PLUGIN_INSTALL_DIR}")
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/i18n/waywallen_zh_CN.qm"
+  DESTINATION "${ZH_CN_PLUGIN_INSTALL_DIR}/translations")
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${APP_SVG}")
   install(
     FILES ${APP_SVG}

@@ -6,11 +6,6 @@
 //   - Staging buffer + command buffer (uploads RGBA into a bridge slot)
 //   - libav decode pipeline
 
-import rstd.cppstd;
-import rstd.log;
-import wavsen.video;
-import nlohmann.json;
-
 #include <rstd/macro.hpp>
 
 #include <waywallen-bridge/bridge.h>
@@ -33,6 +28,11 @@ import nlohmann.json;
 #include <sys/prctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+import rstd.cppstd;
+import rstd.log;
+import wavsen.video;
+import nlohmann.json;
 
 namespace
 {
